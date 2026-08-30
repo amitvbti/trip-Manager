@@ -57,18 +57,6 @@ document.getElementById("settleBtn").onclick=settleCurrent;
 document.getElementById("tripSearch").oninput=renderTrips;
 document.getElementById("memberSearch").oninput=renderMembers;
 document.getElementById("universalSearch").oninput=renderSearch;
-const navSearch=document.getElementById("navUniversalSearch");
-if(navSearch){
-  navSearch.addEventListener("focus",()=>showScreen("search"));
-  navSearch.addEventListener("input",()=>{
-    const q=navSearch.value;
-    const main=document.getElementById("universalSearch");
-    if(main) main.value=q;
-    renderSearch();
-    showScreen("search");
-  });
-}
-
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
 
 function renderAll(){renderHome();renderTrips();renderMembers();renderSettled();renderReports();renderSearch();if(admin)document.getElementById("adminActions").classList.remove("hidden")}
@@ -212,10 +200,25 @@ async function restore(e){
 function exportExcel(){
  if(typeof XLSX==="undefined")return alert("Excel library could not be loaded. Please try again while connected to the internet.");
  const wb=XLSX.utils.book_new(),t=getTrip();const add=(name,rows)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),name);
- add("Trips",state.trips.map(t=>({...t,totalPersons:activeMembers(t).length,totalExpense:expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0),perPersonExpense:activeMembers(t).length?expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0)/activeMembers(t).length})));
- add("Members",state.members);add("Expenses",state.expenses);add("Expense Shares",state.expenses.flatMap(e=>(e.sharedBy||[]).map(memberId=>({expenseId:e.id,memberId,shareAmount:Number(e.amount||0)/(e.sharedBy||[]).length}))));add("Settlements",state.settlements);add("Categories",state.categories.map(name=>({categoryId:name,name})));add("Reports",state.trips.map(t=>({tripId:t.id,totalExpense:expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0),totalPersons:activeMembers(t).length,perPersonExpense:activeMembers(t).length?expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0)/activeMembers(t).length})));
+ add("Trips",state.trips.map(t=>({...t,totalPersons:activeMembers(t).length,totalExpense:expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0),perPersonExpense:activeMembers(t).length?expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0)/activeMembers(t).length:0})));
+ add("Members",state.members);add("Expenses",state.expenses);add("Expense Shares",state.expenses.flatMap(e=>(e.sharedBy||[]).map(memberId=>({expenseId:e.id,memberId,shareAmount:Number(e.amount||0)/(e.sharedBy||[]).length}))));add("Settlements",state.settlements);add("Categories",state.categories.map(name=>({categoryId:name,name})));add("Reports",state.trips.map(t=>({tripId:t.id,totalExpense:expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0),totalPersons:activeMembers(t).length,perPersonExpense:activeMembers(t).length?expensesFor(t).reduce((s,e)=>s+Number(e.amount||0),0)/activeMembers(t).length:0})));
  XLSX.writeFile(wb,"trip-expense-manager-export.xlsx")
 }
 document.getElementById("generateReportsBtn").addEventListener("click",()=>{showScreen("reports");setTimeout(()=>window.print(),300)});
 window.addEventListener("beforeprint",()=>{document.body.classList.add("printing")});window.addEventListener("afterprint",()=>document.body.classList.remove("printing"));
 renderAll();
+
+// Top search bar bridge.
+document.addEventListener("DOMContentLoaded",function(){
+  const navSearch=document.getElementById("navUniversalSearch");
+  if(!navSearch) return;
+  navSearch.addEventListener("focus",function(){
+    if(typeof showScreen==="function") showScreen("search");
+  });
+  navSearch.addEventListener("input",function(){
+    const main=document.getElementById("universalSearch");
+    if(main) main.value=navSearch.value;
+    if(typeof renderSearch==="function") renderSearch();
+    if(typeof showScreen==="function") showScreen("search");
+  });
+});
