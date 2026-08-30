@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Expense Manager</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <div>
+      <h1>Trip Expense Manager</h1>
+      <p class="app-subtitle">Simple, complete trip expense tracking</p>
+    </div>
+    <div id="adminActions" class="admin-actions hidden">
+      <button class="btn btn-secondary" data-screen="manage">MANAGE</button>
+      <button class="btn btn-secondary" data-screen="accounts">ACCOUNTS</button>
+    </div>
+  </header>
+
+  <main>
+    <nav class="top-nav">
+      <button class="nav-btn active" data-screen="home">HOME</button>
+      <button class="nav-btn" data-screen="trips">TRIPS</button>
+      <button class="nav-btn search-nav" data-screen="search">SEARCH</button>
+    </nav>
+
+    <section id="home" class="screen active">
+      <div class="main-actions">
+        <button id="addExpenseBtn" class="action-btn primary">＋ ADD EXPENSE</button>
+        <button class="action-btn" data-screen="reports">▤ VIEW REPORTS</button>
+      </div>
+
+      <div id="currentTripHome" class="trip-home"></div>
+
+      <div id="homeNotes" class="notes-panel hidden">
+        <div class="notes-title-row">
+          <strong>NOTES</strong>
+          <span id="notesStatus">Saved</span>
+        </div>
+        <textarea id="tripNotes" placeholder="Write any general information about this trip..."></textarea>
+      </div>
+
+      <button id="adminTrigger" class="managed-by">MANAGED AND DESIGNED BY</button>
+    </section>
+
+    <section id="trips" class="screen">
+      <div class="screen-heading">
+        <div>
+          <h2>Trips</h2>
+          <p>Current, pinned and previous trips</p>
+        </div>
+        <button id="addTripBtn" class="btn btn-primary">＋ ADD TRIP</button>
+      </div>
+      <div class="search-row"><input id="tripSearch" placeholder="Search trips..."></div>
+      <div id="tripLists"></div>
+    </section>
+
+    <section id="search" class="screen">
+      <div class="screen-heading">
+        <div><h2>Universal Search</h2><p>Search trips, members, expenses and notes</p></div>
+      </div>
+      <input id="universalSearch" class="wide-input" placeholder="Search anything...">
+      <div id="searchResults" class="stack"></div>
+    </section>
+
+    <section id="reports" class="screen">
+      <div class="screen-heading">
+        <div><h2>Reports</h2><p id="reportTripTitle">Current Trip</p></div>
+        <button class="btn btn-secondary" data-screen="home">BACK</button>
+      </div>
+      <div id="reportContent"></div>
+    </section>
+
+    <section id="manage" class="screen admin-only">
+      <div class="screen-heading"><div><h2>Manage</h2></div></div>
+      <div class="large-button-stack">
+        <button class="big-btn" data-screen="members">MEMBERS</button>
+        <button class="big-btn" data-screen="settledTrips">SETTLED TRIPS</button>
+      </div>
+    </section>
+
+    <section id="accounts" class="screen admin-only">
+      <div class="screen-heading"><div><h2>Accounts</h2></div></div>
+      <div class="large-button-stack">
+        <button class="big-btn" id="settleBtn">SETTLE ACCOUNTS</button>
+        <button class="big-btn" id="generateReportsBtn">GENERATE REPORTS</button>
+        <button class="big-btn" id="backupBtn">BACKUP DATA</button>
+        <button class="big-btn" id="restoreBtn">RESTORE DATA</button>
+        <input id="restoreFile" type="file" accept=".json" hidden>
+      </div>
+    </section>
+
+    <section id="members" class="screen admin-only">
+      <div class="screen-heading">
+        <div><h2>Members</h2></div>
+        <button class="btn btn-primary" id="addMemberBtn">＋ ADD MEMBER</button>
+      </div>
+      <div class="search-row"><input id="memberSearch" placeholder="Search members..."></div>
+      <div id="memberList" class="stack"></div>
+    </section>
+
+    <section id="settledTrips" class="screen admin-only">
+      <div class="screen-heading"><div><h2>Settled Trips</h2><p>Previous Trips style accordion</p></div></div>
+      <div id="settledTripList" class="stack"></div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="modalTitle"></h3><button id="modalClose" class="icon-btn">×</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
