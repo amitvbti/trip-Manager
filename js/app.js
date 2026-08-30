@@ -43,12 +43,32 @@ document.getElementById("backupBtn").onclick=backup;
 document.getElementById("restoreBtn").onclick=()=>document.getElementById("restoreFile").click();
 document.getElementById("restoreFile").onchange=restore;
 document.getElementById("modalClose").onclick=closeModal;
-document.getElementById("adminTrigger").onclick=()=>{if(++window._adminClicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");renderAll()}};
-window._adminClicks=0;
+window._adminClicks = 0;
+document.getElementById("adminTrigger").addEventListener("click", function () {
+  window._adminClicks += 1;
+  if (window._adminClicks >= 5) {
+    admin = true;
+    this.classList.add("hidden");
+    document.getElementById("adminActions").classList.remove("hidden");
+    renderAll();
+  }
+});
 document.getElementById("settleBtn").onclick=settleCurrent;
 document.getElementById("tripSearch").oninput=renderTrips;
 document.getElementById("memberSearch").oninput=renderMembers;
 document.getElementById("universalSearch").oninput=renderSearch;
+const navSearch=document.getElementById("navUniversalSearch");
+if(navSearch){
+  navSearch.addEventListener("focus",()=>showScreen("search"));
+  navSearch.addEventListener("input",()=>{
+    const q=navSearch.value;
+    const main=document.getElementById("universalSearch");
+    if(main) main.value=q;
+    renderSearch();
+    showScreen("search");
+  });
+}
+
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
 
 function renderAll(){renderHome();renderTrips();renderMembers();renderSettled();renderReports();renderSearch();if(admin)document.getElementById("adminActions").classList.remove("hidden")}
