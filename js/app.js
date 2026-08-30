@@ -1,4 +1,5 @@
 const KEY="tem_v2_data";
+const BACKUP_KEY="tem_v2_data_backup";
 const LEGACY_MEMBERS="tripExpenseMembers", LEGACY_TRIPS="tripExpenseTrips";
 let state=loadState(), currentScreen="home", admin=false, currentTripId=null;
 
@@ -7,7 +8,8 @@ function defaultState(){
 }
 function loadState(){
  try{
-  const raw=localStorage.getItem(KEY);
+  let raw=localStorage.getItem(KEY);
+  if(!raw) raw=localStorage.getItem(BACKUP_KEY);
   if(raw) return {...defaultState(),...JSON.parse(raw)};
   const s=defaultState();
   const oldM=JSON.parse(localStorage.getItem(LEGACY_MEMBERS)||"[]");
@@ -17,7 +19,11 @@ function loadState(){
   return s;
  }catch(e){return defaultState()}
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function save(){
+  const payload=JSON.stringify(state);
+  localStorage.setItem(KEY,payload);
+  localStorage.setItem(BACKUP_KEY,payload);
+}
 function uid(prefix="ID"){return prefix+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8)}
 function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function fmt(n){return "₹"+Math.round(Number(n)||0).toLocaleString("en-IN")}
