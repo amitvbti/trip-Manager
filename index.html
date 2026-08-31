@@ -63,7 +63,7 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 
 <section id="manage" class="screen admin"><div class="heading"><h2>MANAGE</h2><button class="btn soft" onclick="goBack()">BACK</button></div><div class="stack gap"><button class="big" data-screen="members">MEMBERS</button><button class="big" id="manageSettle">SETTLE ACCOUNTS</button><button class="big" data-screen="settled">SETTLED TRIPS</button><button class="big" id="genReports">GENERATE REPORTS</button></div></section>
 
-<section id="accounts" class="screen admin"><div class="heading"><h2>SETTINGS</h2><button class="btn soft" onclick="goBack()">BACK</button></div><div class="stack gap"><button class="big" id="backup">BACKUP DATA</button><button class="big" id="restore">RESTORE DATA</button><input id="restoreFile" type="file" accept=".json" hidden></div></section>
+<section id="accounts" class="screen admin"><div class="heading"><h2>SETTINGS</h2><button class="btn soft" onclick="goBack()">BACK</button></div><div class="stack gap"><button class="big" id="excel">EXPORT TO EXCEL</button><button class="big" id="backup">BACKUP DATA</button><button class="big" id="restore">RESTORE DATA</button><input id="restoreFile" type="file" accept=".json" hidden></div></section>
 
 <section id="members" class="screen admin"><div class="heading"><h2>MEMBERS</h2><button class="btn blue" id="addMember">＋ ADD MEMBER</button></div><button class="btn soft" onclick="goBack()">BACK</button><div class="search"><input id="memberSearch" placeholder="Search members..."></div><div id="membersList" class="stack"></div></section>
 
@@ -87,12 +87,12 @@ function load(){
  try{let x=localStorage.getItem(DB);if(x)return normalize(JSON.parse(x));
  let s=base(),ms=JSON.parse(localStorage.getItem(OLDM)||"[]"),ts=JSON.parse(localStorage.getItem(OLDT)||"[]");
  s.members=ms.map(m=>({...m,id:m.id||m.code,status:m.status||"Active"}));
- s.trips=ts.map((t,i)=>({...t,id:t.id||t.code||id("T"),code:t.code||"T"+String(i+1).padStart(3,"0"),tripDate:t.tripDate||t.startDate||"",startDate:t.startDate||"",endDate:t.endDate||"",notes:t.notes||"",source:t.source||"",destinations:t.destinations||((t.destination||"")?[t.destination]:[]),memberIds:t.memberIds||[],transportMode:t.transportMode||"",transportDetails:t.transportDetails||"",vehicleName:t.vehicleName||"",fuelRate:t.fuelRate||"",odometerStart:t.odometerStart||"",odometerEnd:t.odometerEnd||"",distanceTravelled:t.distanceTravelled||"",status:t.status||"ACTIVE",createdAt:t.createdAt||new Date().toISOString(),lastUpdated:new Date().toISOString(),pinned:false,firstSettledAt:t.firstSettledAt||null}));
+ s.trips=ts.map((t,i)=>({...t,id:t.id||t.code||id("T"),code:t.code||"T"+String(i+1).padStart(3,"0"),startDate:t.startDate||"",endDate:t.endDate||"",notes:t.notes||"",source:t.source||"",destinations:t.destinations||((t.destination||"")?[t.destination]:[]),memberIds:t.memberIds||[],transportMode:t.transportMode||"",transportDetails:t.transportDetails||"",vehicleName:t.vehicleName||"",fuelRate:t.fuelRate||"",odometerStart:t.odometerStart||"",odometerEnd:t.odometerEnd||"",distanceTravelled:t.distanceTravelled||"",status:t.status||"ACTIVE",createdAt:t.createdAt||new Date().toISOString(),lastUpdated:new Date().toISOString(),pinned:false,firstSettledAt:t.firstSettledAt||null}));
  return s}catch(e){return base()}
 }
 function normalize(x){let s={...base(),...x};s.members=s.members||[];s.trips=s.trips||[];s.expenses=s.expenses||[];s.settlements=s.settlements||[];s.trips.forEach(t=>{t.memberIds=t.memberIds||[];t.destinations=t.destinations||[];t.status=t.status||"ACTIVE";t.notes=t.notes||""});return s}
 function save(){localStorage.setItem(DB,JSON.stringify(S))}
-function current(){let t=S.trips.find(t=>t.id===tripId);if(t)return t;t=S.trips.find(t=>t.status==="ACTIVE");if(t){tripId=t.id;return t}t=S.trips[0]||null;if(t)tripId=t.id;return t}
+function current(){let t=S.trips.find(t=>t.id===tripId);if(t)return t;t=S.trips.find(t=>t.status==="ACTIVE");if(t){tripId=t.id;return t}return null}
 function mems(t){return(t?.memberIds||[]).map(x=>S.members.find(m=>m.id===x)).filter(Boolean)}
 function exps(t){return S.expenses.filter(e=>e.tripId===t.id)}
 function total(t){return exps(t).reduce((a,e)=>a+Number(e.amount||0),0)}
@@ -115,47 +115,81 @@ function home(){
  let t=current(),box=document.getElementById("homeTrip"),np=document.getElementById("homeNotes"),ta=document.getElementById("notesBox"),ab=document.getElementById("addExpense");
  if(!t){box.innerHTML='<div class="panel"><div class="body"><button class="btn blue" onclick="tripModal()">＋ ADD TRIP</button></div></div>';np.classList.add("hidden");ab.disabled=true;return}
  ab.disabled=t.status!=="ACTIVE";ab.title=t.status==="SETTLED"?"This trip is settled. Re-activate it from Manage to add expenses.":"";np.classList.remove("hidden");ta.value=t.notes||"";
- box.innerHTML='<div class="panel"><div class="head" onclick="toggleHome()"><div><h3>CURRENT TRIP : '+esc(t.tripDate||t.startDate||"")+" - "+esc(t.source||"HOME")+" "+(t.destinations.length?"TO "+t.destinations.map(esc).join(" TO "):"")+'</h3><p>'+t.status+'</p></div><b>⌄</b></div><div id="homeBody" class="body hidden"><h4>1. DATE</h4><div>'+esc(t.startDate)+' → '+esc(t.endDate)+'</div><h4>2. DESTINATIONS TO REACH</h4><div class="route">'+[t.source,...t.destinations].filter(Boolean).map((x,i)=>'<div>📍 '+esc(x)+(i===0?" (Start)":"")+'</div>').join("")+'</div><h4>3. MEMBERS IN THIS TRIP</h4>'+mems(t).map(m=>'<div class="member">👤 '+esc(m.name)+'</div>').join("")+'<h4>4. OTHER DETAILS</h4><div class="muted">Trip Name: '+esc(t.name)+'<br>Transport Mode: '+esc(t.transportMode||"—")+'<br>Transport Details: '+esc(t.transportDetails||"—")+'<br>Vehicle Name: '+esc(t.vehicleName||"—")+'<br>Fuel Rate: '+esc(t.fuelRate||"—")+'<br>Distance: '+esc(t.distanceTravelled||"—")+'<br>Last Updated: '+new Date(t.lastUpdated).toLocaleString()+'</div></div></div>';
+ box.innerHTML='<div class="panel"><div class="head" onclick="toggleHome()"><div><h3>CURRENT TRIP : '+esc(t.startDate||"")+" - "+esc(t.source||"HOME")+" "+(t.destinations.length?"TO "+t.destinations.map(esc).join(" TO "):"")+'</h3><p>'+t.status+'</p></div><b>⌄</b></div><div id="homeBody" class="body hidden"><h4>1. DATE</h4><div>'+esc(t.startDate)+' → '+esc(t.endDate)+'</div><h4>2. DESTINATIONS TO REACH</h4><div class="route">'+[t.source,...t.destinations].filter(Boolean).map((x,i)=>'<div>📍 '+esc(x)+(i===0?" (Start)":"")+'</div>').join("")+'</div><h4>3. MEMBERS IN THIS TRIP</h4>'+mems(t).map(m=>'<div class="member">👤 '+esc(m.name)+'</div>').join("")+'<h4>4. OTHER DETAILS</h4><div class="muted">Trip Name: '+esc(t.name)+'<br>Transport Mode: '+esc(t.transportMode||"—")+'<br>Transport Details: '+esc(t.transportDetails||"—")+'<br>Vehicle Name: '+esc(t.vehicleName||"—")+'<br>Fuel Rate: '+esc(t.fuelRate||"—")+'<br>Distance: '+esc(t.distanceTravelled||"—")+'<br>Last Updated: '+new Date(t.lastUpdated).toLocaleString()+'</div></div></div>';
  ta.oninput=()=>{t.notes=ta.value;t.lastUpdated=new Date().toISOString();document.getElementById("noteStatus").textContent="Saving…";save();clearTimeout(window.nt);window.nt=setTimeout(()=>document.getElementById("noteStatus").textContent="Saved",300)}
 }
 function toggleHome(){document.getElementById("homeBody")?.classList.toggle("hidden")}
-function tripCard(t,adminMode=false){return'<div class="panel"><div class="head" onclick="tripId=\''+t.id+'\';this.nextElementSibling.classList.toggle(\'hidden\')"><div><h3>'+esc(t.name)+'</h3><p>'+esc(t.startDate||t.tripDate||"")+' → '+esc(t.endDate||"")+' · '+t.status+(t.pinned?" · 📌":"")+'</p></div><b>⌄</b></div><div class="body hidden"><div><b>Spots:</b> '+esc([t.source,...t.destinations].filter(Boolean).join(" → ")||"—")+'</div><div class="muted" style="margin-top:7px">Members: '+mems(t).map(m=>esc(m.name)).join(", ")+'</div><div class="row-actions"><button class="small" onclick="tripId=\''+t.id+'\';show(\'reports\')">View Report</button><button class="small" onclick="togglePin(\''+t.id+'\')">'+(t.pinned?"Unpin":"Pin")+'</button>'+(adminMode?'<button class="small" onclick="tripModal(\''+t.id+'\')">Edit</button><button class="small" onclick="reactivate(\''+t.id+'\')">Re-activate</button><button class="small danger" onclick="deleteTrip(\''+t.id+'\')">Delete</button>':"")+'</div></div></div>'}
+function tripCard(t,adminMode=false){return'<div class="panel"><div class="head" onclick="tripId=\''+t.id+'\';this.nextElementSibling.classList.toggle(\'hidden\')"><div><h3>'+esc(t.name)+'</h3><p>'+esc(t.startDate||"")+' → '+esc(t.endDate||"")+' · '+t.status+(t.pinned?" · 📌":"")+'</p></div><b>⌄</b></div><div class="body hidden"><div><b>Spots:</b> '+esc([t.source,...t.destinations].filter(Boolean).join(" → ")||"—")+'</div><div class="muted" style="margin-top:7px">Members: '+mems(t).map(m=>esc(m.name)).join(", ")+'</div><div class="row-actions"><button class="small" onclick="tripId=\''+t.id+'\';show(\'reports\')">View Report</button><button class="small" onclick="togglePin(\''+t.id+'\')">'+(t.pinned?"Unpin":"Pin")+'</button>'+(adminMode?'<button class="small" onclick="tripModal(\''+t.id+'\')">Edit</button><button class="small" onclick="reactivate(\''+t.id+'\')">Re-activate</button><button class="small danger" onclick="deleteTrip(\''+t.id+'\')">Delete</button>':"")+'</div></div></div>'}
 function trips(){let q=(document.getElementById("tripSearch")?.value||"").toLowerCase(),ct=current(),all=S.trips.filter(t=>JSON.stringify(t).toLowerCase().includes(q)),cur=ct&&all.some(t=>t.id===ct.id)?all.filter(t=>t.id===ct.id):[],pin=all.filter(t=>t.id!==(ct?.id||"")&&t.pinned),prev=all.filter(t=>t.id!==(ct?.id||"")&&!t.pinned);document.getElementById("tripList").innerHTML='<h3>Current Trip</h3>'+(cur.map(t=>tripCard(t,admin)).join("")||'<div class="muted">No current trip.</div>')+'<h3 style="margin-top:22px">Pinned Trips</h3>'+(pin.map(t=>tripCard(t,admin)).join("")||'<div class="muted">No pinned trips.</div>')+'<h3 style="margin-top:22px">Previous Trips</h3>'+(prev.map(t=>tripCard(t,admin)).join("")||'<div class="muted">No previous trips.</div>')}
 function members(){let q=(document.getElementById("memberSearch")?.value||"").toLowerCase(),a=[...S.members].filter(m=>JSON.stringify(m).toLowerCase().includes(q)).sort((x,y)=>(x.status==="Active"?0:1)-(y.status==="Active"?0:1));document.getElementById("membersList").innerHTML=a.map(m=>'<div class="panel"><div class="body"><div style="display:flex;justify-content:space-between"><div><b class="code">'+esc(m.code||"")+'</b><h3 style="margin:5px 0">'+esc(m.name)+'</h3><div class="muted">'+esc(m.mobile||"")+' '+esc(m.address||"")+'</div></div><b class="'+(m.status==="Inactive"?"warn":"ok")+'">'+m.status+'</b></div><div class="row-actions"><button class="small" onclick="memberModal(\''+m.id+'\')">Edit</button><button class="small" onclick="toggleMember(\''+m.id+'\')">'+(m.status==="Active"?"Make Inactive":"Activate")+'</button></div></div></div>').join("")||'<div class="muted">No members.</div>'}
 function settled(){document.getElementById("settledList").innerHTML=S.trips.filter(t=>t.status==="SETTLED").map(t=>tripCard(t,true)).join("")||'<div class="muted">No settled trips.</div>'}
 function search(){let q=(document.getElementById("globalSearch")?.value||"").trim().toLowerCase(),o=[];if(!q){document.getElementById("results").innerHTML="";return}S.trips.forEach(t=>{if(JSON.stringify(t).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>TRIP</b><h3>'+esc(t.name)+'</h3><button class="small" onclick="tripId=\''+t.id+'\';show(\'reports\')">Open</button></div></div>')});S.members.forEach(m=>{if(JSON.stringify(m).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>MEMBER</b><h3>'+esc(m.name)+'</h3></div></div>')});S.expenses.forEach(e=>{if(JSON.stringify(e).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>EXPENSE</b><div>'+esc(e.description||e.category)+' · '+money(e.amount)+'</div></div></div>')});document.getElementById("results").innerHTML=o.join("")||'<div class="muted">No results.</div>'}
-function reportData(t){let es=exps(t),ms=mems(t),cat={};es.forEach(e=>cat[e.category]=(cat[e.category]||0)+Number(e.amount));let common=0,individual=0;es.forEach(e=>{if((e.sharedBy||[]).length===ms.length)common+=Number(e.amount);else individual+=Number(e.amount)});return{es,ms,cat,common,individual,total:common+individual}}
+function calculateTripAccounts(t){
+ let ms=mems(t), es=exps(t), ids=new Set(ms.map(m=>m.id)), bal={};
+ ms.forEach(m=>bal[m.id]=0);
+
+ let common=[], individual=[], categories={};
+ es.forEach(e=>{
+   let sh=[...(e.sharedBy||[])].filter(x=>ids.has(x));
+   if(!sh.length)return;
+   let amt=Number(e.amount)||0;
+   let isCommon=sh.length===ms.length && ms.length>0;
+   (isCommon?common:individual).push({...e,sharedBy:sh});
+   categories[e.category]=(categories[e.category]||0)+amt;
+   sh.forEach(id=>bal[id]-=amt/sh.length);
+   if(ids.has(e.paidBy))bal[e.paidBy]+=amt;
+ });
+
+ function settle(list){
+   let b={};ms.forEach(m=>b[m.id]=0);
+   list.forEach(e=>{
+     let sh=e.sharedBy||[],amt=Number(e.amount)||0;
+     if(!sh.length)return;
+     sh.forEach(id=>b[id]-=amt/sh.length);
+     if(b[e.paidBy]!==undefined)b[e.paidBy]+=amt;
+   });
+   let debt=ms.filter(m=>b[m.id]<-0.005).map(m=>({m,a:-b[m.id]}));
+   let cred=ms.filter(m=>b[m.id]>0.005).map(m=>({m,a:b[m.id]}));
+   let out=[],i=0,j=0;
+   while(i<debt.length&&j<cred.length){
+     let x=Math.min(debt[i].a,cred[j].a);
+     if(x>0.005)out.push({from:debt[i].m,to:cred[j].m,amount:x});
+     debt[i].a-=x;cred[j].a-=x;
+     if(debt[i].a<0.005)i++;
+     if(cred[j].a<0.005)j++;
+   }
+   return out;
+ }
+
+ let total=es.reduce((a,e)=>a+(Number(e.amount)||0),0);
+ let commonTotal=common.reduce((a,e)=>a+(Number(e.amount)||0),0);
+ let individualTotal=individual.reduce((a,e)=>a+(Number(e.amount)||0),0);
+ let perHead=ms.length?commonTotal/ms.length:0;
+
+ return {
+   trip:t,members:ms,expenses:es,common,individual,
+   total,commonTotal,individualTotal,perHead,categories,
+   balances:bal,
+   commonSettlement:settle(common),
+   individualSettlement:settle(individual),
+   finalSettlement:settle(es)
+ };
+}
+function reportData(t){
+ let a=calculateTripAccounts(t);
+ return {es:a.expenses,ms:a.members,cat:a.categories,common:a.commonTotal,individual:a.individualTotal,total:a.total};
+}
 function reportGroups(t){
- let d=reportData(t), members=d.ms, expenses=d.es;
- let common=expenses.filter(e=>(e.sharedBy||[]).length===members.length);
- let individual=expenses.filter(e=>(e.sharedBy||[]).length!==members.length);
- return {d,members,expenses,common,individual};
+ let a=calculateTripAccounts(t);
+ return {d:{es:a.expenses,ms:a.members,cat:a.categories,common:a.commonTotal,individual:a.individualTotal,total:a.total},members:a.members,expenses:a.expenses,common:a.common,individual:a.individual};
 }
 function settlementLines(t,which="all"){
- let g=reportGroups(t),es=which==="common"?g.common:which==="individual"?g.individual:g.expenses;
- let bal={};g.members.forEach(m=>bal[m.id]=0);
- es.forEach(e=>{
-   let sh=(e.sharedBy||[]).filter(id=>bal[id]!==undefined);
-   if(!sh.length)return;
-   let amt=Number(e.amount)||0,share=amt/sh.length;
-   sh.forEach(id=>bal[id]-=share);
-   if(bal[e.paidBy]!==undefined)bal[e.paidBy]+=amt;
- });
- let debt=g.members.filter(m=>bal[m.id]<-0.005).map(m=>({m,a:-bal[m.id]}));
- let cred=g.members.filter(m=>bal[m.id]>0.005).map(m=>({m,a:bal[m.id]}));
- let out=[],i=0,j=0;
- while(i<debt.length&&j<cred.length){
-   let x=Math.min(debt[i].a,cred[j].a);
-   if(x>0.005)out.push({from:debt[i].m,to:cred[j].m,amount:x});
-   debt[i].a-=x;cred[j].a-=x;
-   if(debt[i].a<0.005)i++;
-   if(cred[j].a<0.005)j++;
- }
- return out;
+ let a=calculateTripAccounts(t);
+ return which==="common"?a.commonSettlement:which==="individual"?a.individualSettlement:a.finalSettlement;
 }
 function settlementHTML(t,which="all"){
- let a=settlementLines(t,which);
- return a.length?a.map(x=>'<div>'+esc(x.from.name)+' pays '+esc(x.to.name)+' = <b>'+money(x.amount)+'</b></div>').join(""):'<div class="muted">No settlement required.</div>';
+ let a=calculateTripAccounts(t), rows=which==="common"?a.commonSettlement:which==="individual"?a.individualSettlement:a.finalSettlement;
+ return rows.length?rows.map(x=>'<div>'+esc(x.from.name)+' pays '+esc(x.to.name)+' = <b>'+money(x.amount)+'</b></div>').join(""):'<div class="muted">No settlement required.</div>';
 }
 function memberHeaders(ms){return ms.map(m=>'<th>'+esc(m.name)+'</th>').join("")}
 function commonMatrixHTML(t,cls="table"){
@@ -219,7 +253,7 @@ function memberModal(mid=""){let m=S.members.find(x=>x.id===mid)||{name:"",mobil
 function saveMember(mid){let name=document.getElementById("mName").value.trim();if(!name)return alert("Please enter member name.");if(mid){let m=S.members.find(x=>x.id===mid);Object.assign(m,{name,mobile:mMobile.value.trim(),address:mAddress.value.trim(),status:mStatus.value})}else S.members.push({id:id("M"),code:"M"+String(S.members.length+1).padStart(3,"0"),name,mobile:mMobile.value.trim(),address:mAddress.value.trim(),status:"Active"});save();closeModal();render()}
 function toggleMember(mid){let m=S.members.find(x=>x.id===mid);m.status=m.status==="Active"?"Inactive":"Active";save();render()}
 function tripModal(tid=""){let t=S.trips.find(x=>x.id===tid)||{name:"",startDate:"",endDate:"",source:"",destinations:[""],memberIds:[],transportMode:"",transportDetails:"",vehicleName:"",fuelRate:"",odometerStart:"",odometerEnd:"",notes:""};let ms=S.members.filter(m=>m.status==="Active");openModal(tid?"Edit Trip":"Add Trip",'<div class="formgrid"><div class="field full"><label>Trip Name</label><input id="tName" value="'+esc(t.name)+'" placeholder="Leave blank for automatic name"></div><div class="field"><label>Start Date *</label><input type="date" id="tStart" value="'+esc(t.startDate)+'"></div><div class="field"><label>End Date *</label><input type="date" id="tEnd" value="'+esc(t.endDate)+'"></div><div class="field full"><label>Source</label><input id="tSource" value="'+esc(t.source||"")+'"></div><div class="field full"><label>Destinations — one per line</label><textarea id="tDest" rows="4">'+esc((t.destinations||[]).join("\\n"))+'</textarea></div><div class="field full"><label>Trip Members *</label><div class="checks">'+ms.map(m=>'<label class="check"><input class="tm" type="checkbox" value="'+m.id+'" '+((t.memberIds||[]).includes(m.id)?"checked":"")+'>'+esc(m.name)+'</label>').join("")+'</div></div><div class="field"><label>Transport Mode</label><select id="tMode"><option value="">Select</option><option>Car</option><option>Bus</option><option>Train</option><option>Flight</option><option>Bike</option><option>Other</option></select></div><div class="field"><label>Vehicle Name</label><input id="tVehicle" value="'+esc(t.vehicleName||"")+'"></div><div class="field"><label>Fuel Rate (₹/L)</label><input type="number" min="0" step=".01" id="tFuel" value="'+esc(t.fuelRate||"")+'"></div><div class="field"><label>Odometer Start</label><input type="number" min="0" id="tOS" value="'+esc(t.odometerStart||"")+'"></div><div class="field"><label>Odometer End</label><input type="number" min="0" id="tOE" value="'+esc(t.odometerEnd||"")+'"></div><div class="field full"><label>Transport Details</label><input id="tDetails" value="'+esc(t.transportDetails||"")+'"></div><div class="field full"><label>Notes</label><textarea id="tNotes" rows="4">'+esc(t.notes||"")+'</textarea></div></div><div class="row-actions"><button class="btn soft" onclick="closeModal()">Cancel</button><button class="btn blue" onclick="saveTrip(\''+tid+'\')">Save Trip</button></div>');document.getElementById("tMode").value=t.transportMode||""}
-function saveTrip(tid){let start=tStart.value,end=tEnd.value,name=tName.value.trim()||"Trip "+(S.trips.length+1),members=[...document.querySelectorAll(".tm:checked")].map(x=>x.value),os=tOS.value,oe=tOE.value;if(!start||!end)return alert("Start Date and End Date are required.");if(end<start)return alert("End Date cannot be before Start Date.");if(!members.length)return alert("Select at least one Trip Member.");if(os!==""&&oe!==""&&Number(oe)<Number(os))return alert("Odometer End cannot be less than Odometer Start.");if(!tid&&S.trips.some(t=>t.status==="ACTIVE"))return alert("Only one Current Trip is allowed.");let d={name,startDate:start,endDate:end,tripDate:start,source:tSource.value.trim(),destinations:tDest.value.split(/\\n+/).map(x=>x.trim()).filter(Boolean),memberIds:members,transportMode:tMode.value,vehicleName:tVehicle.value.trim(),fuelRate:tFuel.value,odometerStart:os,odometerEnd:oe,distanceTravelled:os!==""&&oe!==""?Number(oe)-Number(os):"",transportDetails:tDetails.value.trim(),notes:tNotes.value,status:"ACTIVE",lastUpdated:new Date().toISOString()};if(tid)Object.assign(S.trips.find(t=>t.id===tid),d);else S.trips.push({id:id("T"),code:"T"+String(S.trips.length+1).padStart(3,"0"),createdAt:new Date().toISOString(),firstSettledAt:null,pinned:false,...d});tripId=tid||S.trips.at(-1).id;save();closeModal();show("home")}
+function saveTrip(tid){let start=tStart.value,end=tEnd.value,name=tName.value.trim()||"Trip "+(S.trips.length+1),members=[...document.querySelectorAll(".tm:checked")].map(x=>x.value),os=tOS.value,oe=tOE.value;if(!start||!end)return alert("Start Date and End Date are required.");if(end<start)return alert("End Date cannot be before Start Date.");if(!members.length)return alert("Select at least one Trip Member.");if(os!==""&&oe!==""&&Number(oe)<Number(os))return alert("Odometer End cannot be less than Odometer Start.");if(!tid&&S.trips.some(t=>t.status==="ACTIVE"))return alert("Only one Current Trip is allowed.");let d={name,startDate:start,endDate:end,source:tSource.value.trim(),destinations:tDest.value.split(/\\n+/).map(x=>x.trim()).filter(Boolean),memberIds:members,transportMode:tMode.value,vehicleName:tVehicle.value.trim(),fuelRate:tFuel.value,odometerStart:os,odometerEnd:oe,distanceTravelled:os!==""&&oe!==""?Number(oe)-Number(os):"",transportDetails:tDetails.value.trim(),notes:tNotes.value,status:"ACTIVE",lastUpdated:new Date().toISOString()};if(tid)Object.assign(S.trips.find(t=>t.id===tid),d);else S.trips.push({id:id("T"),code:"T"+String(S.trips.length+1).padStart(3,"0"),createdAt:new Date().toISOString(),firstSettledAt:null,pinned:false,...d});tripId=tid||S.trips.at(-1).id;save();closeModal();show("home")}
 function expenseModal(eid=""){let t=current();if(!t||t.status!=="ACTIVE")return alert("Add Expense is available only for an Active Current Trip.");let e=S.expenses.find(x=>x.id===eid)||{date:new Date().toISOString().slice(0,10),category:S.categories[0],description:"",amount:"",paidBy:mems(t)[0]?.id||"",sharedBy:t.memberIds.slice()};let ms=mems(t);openModal(eid?"Edit Expense":"Add Expense",'<div class="formgrid"><div class="field"><label>Date</label><input type="date" id="eDate" value="'+esc(e.date)+'"></div><div class="field"><label>Category</label><select id="eCat">'+S.categories.map(c=>'<option '+(c===e.category?"selected":"")+'>'+esc(c)+'</option>').join("")+'</select></div><div class="field full"><label>Description / Remark</label><input id="eDesc" value="'+esc(e.description||"")+'"></div><div class="field"><label>Amount (₹) *</label><input type="number" id="eAmt" min="1" step=".01" value="'+esc(e.amount)+'"></div><div class="field"><label>Paid By *</label><select id="ePaid">'+ms.map(m=>'<option value="'+m.id+'" '+(e.paidBy===m.id?"selected":"")+'>'+esc(m.name)+'</option>').join("")+'</select></div><div class="field full"><label>Shared By</label><div class="checks">'+ms.map(m=>'<label class="check"><input class="sm" type="checkbox" value="'+m.id+'" '+((e.sharedBy||[]).includes(m.id)?"checked":"")+'>'+esc(m.name)+'</label>').join("")+'</div><div id="counter" class="counter"></div></div></div><div class="row-actions"><button class="btn soft" onclick="closeModal()">Cancel</button><button class="btn blue" onclick="saveExpense(\''+eid+'\')">Save</button></div>');document.querySelectorAll(".sm").forEach(x=>x.onchange=counter);counter()}
 function counter(){let a=document.querySelectorAll(".sm").length,b=document.querySelectorAll(".sm:checked").length,c=document.getElementById("counter");if(c)c.textContent=b+" of "+a+" members selected"}
 function saveExpense(eid){let t=current(),a=Number(eAmt.value),sh=[...document.querySelectorAll(".sm:checked")].map(x=>x.value);if(!eDate.value)return alert("Date is required.");if(!Number.isFinite(a)||a<1)return alert("Amount must be ₹1 or more.");if(!sh.length)return alert("At least one member must be selected.");let d={tripId:t.id,date:eDate.value,category:eCat.value,description:eDesc.value.trim(),amount:a,paidBy:ePaid.value,sharedBy:sh,lastUpdated:new Date().toISOString()};if(eid)Object.assign(S.expenses.find(e=>e.id===eid),d);else S.expenses.push({id:id("E"),...d});save();closeModal();render()}
@@ -231,7 +265,92 @@ function togglePin(tid){let t=S.trips.find(x=>x.id===tid);t.pinned=!t.pinned;sav
 function backup(){let d={...S,backupFormat:"trip-manager-backup",backupVersion:3,exportedAt:new Date().toISOString()};download(new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),"trip-manager-backup-"+new Date().toISOString().slice(0,10)+".json")}
 function restoreFile(e){let f=e.target.files[0];if(!f)return;f.text().then(txt=>{try{let d=JSON.parse(txt);if(d.backupFormat!=="trip-manager-backup")throw Error("Invalid Trip Manager backup.");if(!confirm("Restoring this backup will replace current app data. Continue?"))return;S=normalize(d);save();render();alert("Backup restored successfully.")}catch(x){alert("Restore failed: "+x.message)}});e.target.value=""}
 function download(blob,name){let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function excel(){if(!window.XLSX)return alert("Excel export library is unavailable. Connect to the internet and try again.");let wb=XLSX.utils.book_new(),rows=(x)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(x),arguments[0]);XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.trips.map(t=>({...t,totalPersons:mems(t).length,totalExpense:total(t),perPersonExpense:mems(t).length?total(t)/mems(t).length:0}))),"Trips");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.members),"Members");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.expenses),"Expenses");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.expenses.flatMap(e=>(e.sharedBy||[]).map(mid=>({expenseId:e.id,memberId:mid,shareAmount:Number(e.amount)/(e.sharedBy||[]).length})))),"Expense Shares");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.settlements),"Settlements");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.categories.map((name,i)=>({categoryId:i+1,name}))),"Categories");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.trips.map(t=>({tripId:t.id,totalExpense:total(t),totalPersons:mems(t).length,perPersonExpense:mems(t).length?total(t)/mems(t).length:0}))),"Reports");XLSX.writeFile(wb,"trip-manager-export.xlsx")}
+function excel(){
+ if(!window.XLSX)return alert("Excel export library is unavailable. Connect to the internet and try again.");
+ let t=current();
+ if(!t)return alert("No trip selected.");
+
+ let a=calculateTripAccounts(t),ms=a.members,all=a.expenses;
+
+ // Sheet 1: Trip Details
+ let tripRows=[
+   ["TRIP DETAILS",""],
+   ["Trip Name",t.name||""],
+   ["Start Date",t.startDate||""],
+   ["End Date",t.endDate||""],
+   ["Transport Mode",(t.transportMode||"")+(t.vehicleName?" — "+t.vehicleName:"")],
+   ["Notes",t.notes||""]
+ ];
+
+ // Sheet 2: Dashboard
+ let dashboard=[
+   ["DASHBOARD SUMMARY",""],
+   ["Total Expense",a.total],
+   ["No. of Persons",ms.length],
+   ["Per Head Share (Common Account)",a.perHead]
+ ];
+
+ // Sheet 3: Common Expenses
+ let commonHeader=["EXPENSE"].concat(ms.map(m=>m.name));
+ let commonRows=a.common.map(e=>{
+   let r=[(e.category||"")+(e.description?" — "+e.description:"")];
+   ms.forEach(m=>r.push(m.id===e.paidBy?Number(e.amount):""));
+   return r;
+ });
+ commonRows.push(["TOTAL"].concat(ms.map(m=>a.common.filter(e=>e.paidBy===m.id).reduce((s,e)=>s+Number(e.amount),0))));
+
+ // Sheet 4: Individual Expenses + liabilities
+ let individualHeader=["ITEM","PAYER","AMOUNT"].concat(ms.map(m=>m.name));
+ let individualRows=a.individual.map(e=>{
+   let sh=e.sharedBy||[];
+   return [
+     (e.category||"")+(e.description?" — "+e.description:""),
+     ms.find(m=>m.id===e.paidBy)?.name||"",
+     Number(e.amount),
+     ...ms.map(m=>sh.includes(m.id)?Number(e.amount)/Math.max(sh.length,1):"")
+   ];
+ });
+ individualRows.push(["TOTAL LIABILITY","",""].concat(ms.map(m=>
+   a.individual.reduce((s,e)=>s+((e.sharedBy||[]).includes(m.id)?Number(e.amount)/Math.max((e.sharedBy||[]).length,1):0),0)
+ )));
+
+ // Sheet 5: Category-wise
+ let catRows=Object.entries(a.categories).map(([category,amount])=>[
+   category,amount,a.total?amount/a.total:0
+ ]);
+ catRows.push(["TOTAL",a.total,1]);
+
+ // Sheet 6: Settlements
+ function settlementRows(label,list){
+   return list.length?list.map(x=>[x.from.name+" pays "+x.to.name,x.amount]):[[label,""]];
+ }
+ let settlementSheet=[
+   ["COMMON SETTLEMENT","AMOUNT"],
+   ...settlementRows("No settlement required.",a.commonSettlement),
+   [],
+   ["INDIVIDUAL SETTLEMENT","AMOUNT"],
+   ...settlementRows("No settlement required.",a.individualSettlement),
+   [],
+   ["FINAL SETTLEMENT","AMOUNT"],
+   ...settlementRows("No settlement required.",a.finalSettlement)
+ ];
+
+ let wb=XLSX.utils.book_new();
+ function add(name,rows){
+   let ws=XLSX.utils.aoa_to_sheet(rows);
+   ws["!cols"]=Array.from({length:Math.max(...rows.map(r=>r.length),1)},(_,i)=>({wch:i===0?30:18}));
+   XLSX.utils.book_append_sheet(wb,ws,name);
+ }
+ add("Trip Details",tripRows);
+ add("Dashboard",dashboard);
+ add("Common Expenses",[commonHeader,...commonRows]);
+ add("Individual Expenses",[individualHeader,...individualRows]);
+ add("Category-wise",[["CATEGORY","AMOUNT","PERCENTAGE"],...catRows]);
+ add("Settlements",settlementSheet);
+
+ XLSX.writeFile(wb,"trip-manager-"+(t.name||"trip").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()+".xlsx");
+}
+
 function makePdf(){
  let t=current();if(!t)return alert("No trip selected.");
  let g=reportGroups(t);
@@ -263,7 +382,7 @@ function makePdf(){
  document.getElementById("pdfPrint").innerHTML=firstPage+secondPage;
  window.print();
 }
-document.getElementById("closeModal").onclick=closeModal;document.getElementById("addMember").onclick=()=>memberModal();document.getElementById("backup").onclick=backup;document.getElementById("restore").onclick=()=>document.getElementById("restoreFile").click();document.getElementById("restoreFile").onchange=restoreFile;document.getElementById("genReports").onclick=()=>{show("reports");setTimeout(makePdf,250)};document.getElementById("tripSearch").oninput=trips;document.getElementById("memberSearch").oninput=members;document.getElementById("globalSearch").oninput=search;document.getElementById("navUniversalSearch").addEventListener("focus",()=>show("search"));document.getElementById("navUniversalSearch").addEventListener("input",e=>{document.getElementById("globalSearch").value=e.target.value;show("search")});
+document.getElementById("closeModal").onclick=closeModal;document.getElementById("addMember").onclick=()=>memberModal();document.getElementById("backup").onclick=backup;document.getElementById("excel").onclick=excel;document.getElementById("restore").onclick=()=>document.getElementById("restoreFile").click();document.getElementById("restoreFile").onchange=restoreFile;document.getElementById("genReports").onclick=()=>{show("reports");setTimeout(makePdf,250)};document.getElementById("tripSearch").oninput=trips;document.getElementById("memberSearch").oninput=members;document.getElementById("globalSearch").oninput=search;document.getElementById("navUniversalSearch").addEventListener("focus",()=>show("search"));document.getElementById("navUniversalSearch").addEventListener("input",e=>{document.getElementById("globalSearch").value=e.target.value;show("search")});
 function adminUnlock(){clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";document.getElementById("adminTrigger").style.display="none"}}
 document.getElementById("adminTrigger").addEventListener("click",function(e){e.preventDefault();clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";this.style.display="none"}});
 render();
