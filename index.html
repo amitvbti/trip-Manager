@@ -40,9 +40,9 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 
 <section id="trips" class="screen"><div class="heading"><div><h2>Trips</h2><p>Current, pinned and previous trips</p></div><button class="btn blue" id="addTrip">＋ ADD TRIP</button></div><div class="search"><input id="tripSearch" placeholder="Search trips..."></div><div id="tripList"></div></section>
 
-<section id="search" class="screen"><div class="heading"><div><h2>Universal Search</h2><p>Search trips, members, expenses and notes</p></div></div><input id="globalSearch" placeholder="Search anything..."><div id="results" class="stack" style="margin-top:15px"></div></section>
+<section id="search" class="screen"><div class="heading"><div><h2>Universal Search</h2><p>Search trips, members, expenses and notes</p><button class="btn soft" onclick="goBack()">BACK</button></div></div><input id="globalSearch" placeholder="Search anything..."><div id="results" class="stack" style="margin-top:15px"></div></section>
 
-<section id="reports" class="screen"><div class="heading"><div><h2>Trip Summary</h2><p id="reportTitle"></p></div><button class="btn soft" data-screen="home">BACK</button></div><div id="reportSummary"></div><div class="row-actions page-links"><button class="btn" data-screen="expensesPage">EXPENSES</button><button class="btn" data-screen="analysisPage">EXPENSE ANALYSIS</button></div></section>
+<section id="reports" class="screen"><div class="heading"><div><h2>Trip Summary</h2><p id="reportTitle"></p></div><button class="btn soft" onclick="goBack()">BACK</button></div><div id="reportSummary"></div><div class="row-actions page-links"><button class="btn" data-screen="expensesPage">EXPENSES</button><button class="btn" data-screen="analysisPage">EXPENSE ANALYSIS</button></div></section>
 <section id="expensesPage" class="screen"><div class="heading"><div><h2>Expenses</h2><p id="expensePageTitle"></p></div><button class="btn soft" data-screen="reports">BACK</button></div><div id="expensePageContent"></div></section>
 <section id="analysisPage" class="screen"><div class="heading"><div><h2>Expense Analysis</h2><p id="analysisPageTitle"></p></div><button class="btn soft" data-screen="reports">BACK</button></div><div id="analysisPageContent"></div></section>
 
@@ -82,7 +82,19 @@ function current(){return S.trips.find(t=>t.id===tripId)||S.trips.find(t=>t.stat
 function mems(t){return(t?.memberIds||[]).map(x=>S.members.find(m=>m.id===x)).filter(Boolean)}
 function exps(t){return S.expenses.filter(e=>e.tripId===t.id)}
 function total(t){return exps(t).reduce((a,e)=>a+Number(e.amount||0),0)}
-function show(idn){if(["manage","accounts","members","settled"].includes(idn)&&!admin)return;screen=idn;document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===idn));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.screen===idn));render()}
+let navHistory=[];
+function show(idn,fromBack=false){
+ if(["manage","accounts","members","settled"].includes(idn)&&!admin)return;
+ if(!fromBack&&screen!==idn)navHistory.push(screen);
+ screen=idn;
+ document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===idn));
+ document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.screen===idn));
+ render();
+}
+function goBack(){
+ if(navHistory.length){let previous=navHistory.pop();show(previous,true);}
+ else if(screen!=="home")show("home",true);
+}
 document.addEventListener("click",e=>{let b=e.target.closest("[data-screen]");if(b)show(b.dataset.screen)});
 function render(){home();trips();members();settled();reports();expensePage();analysisPage();search();document.getElementById("adminActions").classList.toggle("hidden",!admin)}
 function home(){
