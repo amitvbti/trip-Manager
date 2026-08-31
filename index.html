@@ -239,6 +239,13 @@ function makePdf(){
  let firstPage=
  '<div class="pdf-page pdf-page-1">'+
  '<div class="pdf-title">Trip Manager — '+esc(t.name)+'</div>'+
+ '<div class="pdf-block"><h3>Trip Details</h3><table class="pdf-table">'+
+ '<tr><td>Trip Name</td><td>'+esc(t.name)+'</td></tr>'+
+ '<tr><td>Start Date</td><td>'+esc(t.startDate)+'</td></tr>'+
+ '<tr><td>End Date</td><td>'+esc(t.endDate)+'</td></tr>'+
+ '<tr><td>Transport Mode</td><td colspan="3">'+esc(t.transportMode||"—")+(t.vehicleName?' — '+esc(t.vehicleName):'')+'</td></tr>'+
+ '<tr><td>Notes</td><td colspan="3">'+esc(t.notes||"—")+'</td></tr>'+
+ '</table></div>'+
  '<div class="pdf-block"><h3>Dashboard Summary</h3><table class="pdf-table summary-table"><tr><th>Total Expense</th><th>No. of Persons</th><th>Per Head Share</th></tr><tr><td>'+money(g.d.total)+'</td><td>'+g.members.length+'</td><td>'+money(g.members.length?g.d.common/g.members.length:0)+'</td></tr></table></div>'+
  '<div class="pdf-block"><h3>Common Expense</h3>'+commonMatrixHTML(t,"pdf-table pdf-matrix")+'</div>'+
  '<div class="pdf-block"><h3>Settlement Amounts — Common Expenses</h3><div class="pdf-settlement">'+settlementHTML(t,"common")+'</div></div>'+
