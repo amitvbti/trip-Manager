@@ -23,7 +23,7 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 @media print{
  body{background:#fff}.app{box-shadow:none;max-width:none}.app>*{display:none!important}#pdfPrint{display:block!important;padding:18mm;font-size:11px}#pdfPrint .pdf-page{min-height:255mm;page-break-after:always}#pdfPrint .pdf-page:last-child{page-break-after:auto}.pdf-title{font-size:20px;margin-bottom:10px}.pdf-block{margin:10px 0}.pdf-block h3{font-size:13px;border-bottom:1px solid #999;padding-bottom:3px}.pdf-table{width:100%;border-collapse:collapse}.pdf-table th,.pdf-table td{border:1px solid #aaa;padding:5px}.pdf-table th{background:#eee}.pdf-small{font-size:10px;color:#444}
 }
-</style>
+.settle-help{margin-top:-4px;margin-bottom:4px;line-height:1.45} </style>
 </head>
 <body>
 <div class="app">
@@ -46,7 +46,7 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 
 <section id="manage" class="screen admin"><div class="heading"><h2>Manage</h2></div><div class="stack gap"><button class="big" data-screen="members">MEMBERS</button><button class="big" data-screen="settled">SETTLED TRIPS</button></div></section>
 
-<section id="accounts" class="screen admin"><div class="heading"><h2>Accounts</h2></div><div class="stack gap"><button class="big" id="settle">SETTLE ACCOUNTS</button><button class="big" id="genReports">GENERATE REPORTS</button><button class="big" id="backup">BACKUP DATA</button><button class="big" id="restore">RESTORE DATA</button><input id="restoreFile" type="file" accept=".json" hidden></div></section>
+<section id="accounts" class="screen admin"><div class="heading"><h2>Accounts</h2></div><div class="stack gap"><button class="big" id="settle">SETTLE ACCOUNTS</button><div class="muted settle-help">Finalise this trip’s accounts. After settlement, no new expenses can be added unless the trip is re-activated.</div><button class="big" id="genReports">GENERATE REPORTS</button><button class="big" id="backup">BACKUP DATA</button><button class="big" id="restore">RESTORE DATA</button><input id="restoreFile" type="file" accept=".json" hidden></div></section>
 
 <section id="members" class="screen admin"><div class="heading"><h2>Members</h2><button class="btn blue" id="addMember">＋ ADD MEMBER</button></div><div class="search"><input id="memberSearch" placeholder="Search members..."></div><div id="membersList" class="stack"></div></section>
 
@@ -110,8 +110,8 @@ function expenseModal(eid=""){let t=current();if(!t||t.status!=="ACTIVE")return 
 function counter(){let a=document.querySelectorAll(".sm").length,b=document.querySelectorAll(".sm:checked").length,c=document.getElementById("counter");if(c)c.textContent=b+" of "+a+" members selected"}
 function saveExpense(eid){let t=current(),a=Number(eAmt.value),sh=[...document.querySelectorAll(".sm:checked")].map(x=>x.value);if(!eDate.value)return alert("Date is required.");if(!Number.isFinite(a)||a<1)return alert("Amount must be ₹1 or more.");if(!sh.length)return alert("At least one member must be selected.");let d={tripId:t.id,date:eDate.value,category:eCat.value,description:eDesc.value.trim(),amount:a,paidBy:ePaid.value,sharedBy:sh,lastUpdated:new Date().toISOString()};if(eid)Object.assign(S.expenses.find(e=>e.id===eid),d);else S.expenses.push({id:id("E"),...d});save();close();render()}
 function deleteExpense(eid){if(!confirm("Delete this expense?"))return;S.expenses=S.expenses.filter(e=>e.id!==eid);save();render()}
-function settleCurrent(){let t=current();if(!t)return alert("No Current Trip.");if(!exps(t).length)return alert("No expenses to settle.");if(!confirm("Settle accounts for "+t.name+"?"))return;t.status="SETTLED";t.firstSettledAt=t.firstSettledAt||new Date().toISOString();t.lastUpdated=new Date().toISOString();save();render()}
-function reactivate(tid){let t=S.trips.find(x=>x.id===tid);if(!t)return;if(t.firstSettledAt&&Date.now()-new Date(t.firstSettledAt).getTime()>86400000)return alert("The original 24-hour settlement window has expired.");if(S.trips.some(x=>x.status==="ACTIVE"))return alert("An active Current Trip already exists.");t.status="ACTIVE";t.lastUpdated=new Date().toISOString();save();render()}
+function settleCurrent(){let t=current();if(!t)return alert("No Current Trip.");if(t.status==="SETTLED")return alert("This trip is already settled.");if(!exps(t).length)return alert("No expenses to settle.");if(!confirm("Settle accounts for this trip?\\n\\n"+t.name+"\\n\\nNo new expenses can be added unless the trip is re-activated."))return;t.status="SETTLED";t.firstSettledAt=t.firstSettledAt||new Date().toISOString();t.lastUpdated=new Date().toISOString();save();render();show("settled")}
+function reactivate(tid){let t=S.trips.find(x=>x.id===tid);if(!t)return;if(S.trips.some(x=>x.status==="ACTIVE"))return alert("An active Current Trip already exists.");if(!confirm("Re-activate this settled trip?"))return;t.status="ACTIVE";t.lastUpdated=new Date().toISOString();save();render()}
 function deleteTrip(tid){let t=S.trips.find(x=>x.id===tid);if(!confirm("Delete "+t.name+"?"))return;S.trips=S.trips.filter(x=>x.id!==tid);S.expenses=S.expenses.filter(e=>e.tripId!==tid);save();render()}
 function togglePin(tid){let t=S.trips.find(x=>x.id===tid);t.pinned=!t.pinned;save();render()}
 function backup(){let d={...S,backupFormat:"trip-manager-backup",backupVersion:3,exportedAt:new Date().toISOString()};download(new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),"trip-manager-backup-"+new Date().toISOString().slice(0,10)+".json")}
