@@ -17,11 +17,26 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 .trip-meta{font-size:12px;color:#667085}.route{display:flex;flex-direction:column}.route div{padding:7px 0;border-bottom:1px solid #edf0f4}.member{padding:7px 0;border-bottom:1px solid #edf0f4}.row-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.small{padding:7px 10px;border:1px solid #dbe2ea;background:#fff;border-radius:7px;font-size:12px}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700}.checks{border:1px solid #dbe2ea;border-radius:9px;padding:9px}.check{display:flex;gap:8px;align-items:center;padding:4px 0}.check input{width:auto}.counter{font-size:11px;color:#667085;margin-top:5px}
 .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:20}.modal-card{width:min(700px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:15px;padding:20px}.modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.close{border:0;background:transparent;font-size:25px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{padding:13px;border:1px solid #dbe2ea;border-radius:10px}.stat small{color:#667085;display:block;font-size:11px}.stat b{font-size:19px}.report{margin-top:18px}.report h3{font-size:16px;margin:0 0 9px}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{border:1px solid #dbe2ea;padding:7px;text-align:left}.table th{background:#edf3ff}.expense{border:1px solid #dbe2ea;border-radius:9px;padding:11px;margin:7px 0}.expense-top{display:flex;justify-content:space-between;gap:8px}.muted{color:#667085;font-size:12px}.ok{color:#15803d}.warn{color:#b45309}
-#pdfPrint{display:none}.pie{width:190px;height:190px;display:block;margin:12px auto}.report-matrix th,.report-matrix td{min-width:80px}.share-row td,.pdf-share-row td{font-style:italic}.share-row td:not(:first-child),.pdf-share-row td:not(:first-child){color:#667085}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stats.three{grid-template-columns:repeat(3,1fr)}.stat{padding:13px;border:1px solid #dbe2ea;border-radius:10px}.stat small{color:#667085;display:block;font-size:11px}.stat b{font-size:19px}.report{margin-top:18px}.report h3{font-size:16px;margin:0 0 9px}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{border:1px solid #dbe2ea;padding:7px;text-align:left}.table th{background:#edf3ff}.expense{border:1px solid #dbe2ea;border-radius:9px;padding:11px;margin:7px 0}.expense-top{display:flex;justify-content:space-between;gap:8px}.muted{color:#667085;font-size:12px}.ok{color:#15803d}.warn{color:#b45309}
+#pdfPrint{display:none}.pie{width:190px;height:190px;display:block;margin:12px auto}.report-matrix th,.report-matrix td{min-width:80px}.category-table .pie-cell{vertical-align:middle;text-align:center;width:230px}.report-pie{width:190px;height:190px}.pdf-settlement{padding:5px 0;line-height:1.6}
 @media(max-width:650px){header{align-items:flex-start;flex-direction:column}.screen{padding:20px 15px 35px}.formgrid,.stats{grid-template-columns:1fr}.admin-actions{margin-top:50px}.admin-actions button{flex:1}.heading{align-items:flex-start;flex-direction:column}.nav-search{min-width:0;max-width:none}}
 @media print{
- body{background:#fff!important;margin:0!important}.app{box-shadow:none;max-width:none}.app>*{display:none!important}#pdfPrint{display:block!important;padding:18mm;font-size:11px}#pdfPrint .pdf-content{display:block!important;margin:0!important;padding:0!important;page-break-before:auto!important;break-before:auto!important;page-break-after:auto!important;break-after:auto!important}#pdfPrint .pdf-page-2{display:block!important;page-break-before:always!important;break-before:page!important;margin:0!important;padding:0!important}.pdf-title{font-size:20px;margin-bottom:10px}.pdf-block{margin:10px 0}.pdf-block h3{font-size:13px;border-bottom:1px solid #999;padding-bottom:3px}.pdf-table{width:100%;border-collapse:collapse}.pdf-table th,.pdf-table td{border:1px solid #aaa;padding:5px}.pdf-table th{background:#eee}.pdf-small{font-size:10px;color:#444}
+ @page{margin:10mm}
+ body{background:#fff!important;margin:0!important}
+ .app{display:none!important}
+ #pdfPrint{display:block!important;margin:0!important;padding:0!important;font-size:10px}
+ #pdfPrint .pdf-page{display:block!important;width:100%!important;margin:0!important;padding:0!important;min-height:0!important;page-break-after:auto!important;break-after:auto!important}
+ #pdfPrint .pdf-page-2{page-break-before:always!important;break-before:page!important}
+ .pdf-title{font-size:18px;margin:0 0 8px}
+ .pdf-block{margin:7px 0}
+ .pdf-block h3{font-size:12px;border-bottom:1px solid #999;padding-bottom:3px;margin:0 0 5px}
+ .pdf-table{width:100%;border-collapse:collapse;font-size:9px}
+ .pdf-table th,.pdf-table td{border:1px solid #aaa;padding:4px}
+ .pdf-table th{background:#eee}
+ .pdf-matrix th,.pdf-matrix td{min-width:0}
+ .pdf-table .pie-cell{width:230px;vertical-align:middle;text-align:center}
+ .pdf-table .report-pie{width:185px;height:185px}
+ .pdf-settlement{line-height:1.45}
 }
 .settle-help{margin-top:-4px;margin-bottom:4px;line-height:1.45} .heading .back-group{display:flex;gap:8px;flex-wrap:wrap}</style>
 </head>
@@ -110,71 +125,89 @@ function members(){let q=(document.getElementById("memberSearch")?.value||"").to
 function settled(){document.getElementById("settledList").innerHTML=S.trips.filter(t=>t.status==="SETTLED").map(t=>tripCard(t,true)).join("")||'<div class="muted">No settled trips.</div>'}
 function search(){let q=(document.getElementById("globalSearch")?.value||"").trim().toLowerCase(),o=[];if(!q){document.getElementById("results").innerHTML="";return}S.trips.forEach(t=>{if(JSON.stringify(t).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>TRIP</b><h3>'+esc(t.name)+'</h3><button class="small" onclick="tripId=\''+t.id+'\';show(\'reports\')">Open</button></div></div>')});S.members.forEach(m=>{if(JSON.stringify(m).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>MEMBER</b><h3>'+esc(m.name)+'</h3></div></div>')});S.expenses.forEach(e=>{if(JSON.stringify(e).toLowerCase().includes(q))o.push('<div class="panel"><div class="body"><b>EXPENSE</b><div>'+esc(e.description||e.category)+' · '+money(e.amount)+'</div></div></div>')});document.getElementById("results").innerHTML=o.join("")||'<div class="muted">No results.</div>'}
 function reportData(t){let es=exps(t),ms=mems(t),cat={};es.forEach(e=>cat[e.category]=(cat[e.category]||0)+Number(e.amount));let common=0,individual=0;es.forEach(e=>{if((e.sharedBy||[]).length===ms.length)common+=Number(e.amount);else individual+=Number(e.amount)});return{es,ms,cat,common,individual,total:common+individual}}
+function reportGroups(t){
+ let d=reportData(t), members=d.ms, expenses=d.es;
+ let common=expenses.filter(e=>(e.sharedBy||[]).length===members.length);
+ let individual=expenses.filter(e=>(e.sharedBy||[]).length!==members.length);
+ return {d,members,expenses,common,individual};
+}
+function settlementLines(t,which="all"){
+ let g=reportGroups(t),es=which==="common"?g.common:which==="individual"?g.individual:g.expenses;
+ let bal={};g.members.forEach(m=>bal[m.id]=0);
+ es.forEach(e=>{
+   let sh=(e.sharedBy||[]).filter(id=>bal[id]!==undefined);
+   if(!sh.length)return;
+   let amt=Number(e.amount)||0,share=amt/sh.length;
+   sh.forEach(id=>bal[id]-=share);
+   if(bal[e.paidBy]!==undefined)bal[e.paidBy]+=amt;
+ });
+ let debt=g.members.filter(m=>bal[m.id]<-0.005).map(m=>({m,a:-bal[m.id]}));
+ let cred=g.members.filter(m=>bal[m.id]>0.005).map(m=>({m,a:bal[m.id]}));
+ let out=[],i=0,j=0;
+ while(i<debt.length&&j<cred.length){
+   let x=Math.min(debt[i].a,cred[j].a);
+   if(x>0.005)out.push({from:debt[i].m,to:cred[j].m,amount:x});
+   debt[i].a-=x;cred[j].a-=x;
+   if(debt[i].a<0.005)i++;
+   if(cred[j].a<0.005)j++;
+ }
+ return out;
+}
+function settlementHTML(t,which="all"){
+ let a=settlementLines(t,which);
+ return a.length?a.map(x=>'<div>'+esc(x.from.name)+' pays '+esc(x.to.name)+' = <b>'+money(x.amount)+'</b></div>').join(""):'<div class="muted">No settlement required.</div>';
+}
+function memberHeaders(ms){return ms.map(m=>'<th>'+esc(m.name)+'</th>').join("")}
+function commonMatrixHTML(t,cls="table"){
+ let g=reportGroups(t),ms=g.members;
+ let rows=g.common.map(e=>{
+   let cells=ms.map(m=>{let v=m.id===e.paidBy?Number(e.amount):0;return '<td>'+(v?money(v):'')+'</td>'}).join("");
+   return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td>'+cells+'</tr>';
+ }).join("");
+ let totals=ms.map(m=>{let v=g.common.filter(e=>e.paidBy===m.id).reduce((a,e)=>a+Number(e.amount),0);return '<td>'+money(v)+'</td>'}).join("");
+ return '<table class="'+cls+'"><tr><th>Expense</th>'+memberHeaders(ms)+'</tr>'+(rows||'<tr><td colspan="'+(ms.length+1)+'" class="muted">No common expenses.</td></tr>')+'<tr><th>Total</th>'+totals+'</tr></table>';
+}
+function individualMatrixHTML(t,cls="table"){
+ let g=reportGroups(t),ms=g.members;
+ let rows=g.individual.map(e=>{
+   let liability=ms.map(m=>{let sh=e.sharedBy||[],v=sh.includes(m.id)?Number(e.amount)/Math.max(sh.length,1):0;return '<td>'+(v?money(v):'')+'</td>'}).join("");
+   return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td><td>'+esc(g.members.find(m=>m.id===e.paidBy)?.name||"Unknown")+'</td><td>'+money(e.amount)+'</td>'+liability+'</tr>';
+ }).join("");
+ let totals=ms.map(m=>{let v=g.individual.reduce((a,e)=>a+((e.sharedBy||[]).includes(m.id)?Number(e.amount)/Math.max((e.sharedBy||[]).length,1):0),0);return '<td>'+money(v)+'</td>'}).join("");
+ return '<table class="'+cls+'"><tr><th>Item</th><th>Payer</th><th>Amount</th>'+memberHeaders(ms)+'</tr>'+(rows||'<tr><td colspan="'+(ms.length+3)+'" class="muted">No individual expenses.</td></tr>')+'<tr><th colspan="3">Total Liability</th>'+totals+'</tr></table>';
+}
+function categoryPieSVG(t){
+ let g=reportGroups(t), vals=Object.entries(g.d.cat);
+ let total=vals.reduce((a,x)=>a+Number(x[1]),0)||1, cx=95,cy=95,r=82,a=-Math.PI/2;
+ let fills=["#2563eb","#16a34a","#f59e0b","#dc2626","#7c3aed","#0891b2","#db2777","#65a30d","#ea580c","#4f46e5"],paths="";
+ vals.forEach(([,v],i)=>{let na=a+Number(v)/total*Math.PI*2,x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(na),y2=cy+r*Math.sin(na),large=na-a>Math.PI?1:0;paths+='<path d="M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z" fill="'+fills[i%fills.length]+'" stroke="#fff" stroke-width="1"></path>';a=na});
+ return '<svg class="pie report-pie" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">'+paths+'</svg>';
+}
+function categoryHTML(t,cls="table"){
+ let g=reportGroups(t),vals=Object.entries(g.d.cat),total=g.d.total||1,n=vals.length||1;
+ let rows=vals.map(([c,a],i)=>'<tr><td>'+esc(c)+'</td><td>'+money(a)+'</td><td>'+Math.round(a/total*100)+'%</td>'+(i===0?'<td rowspan="'+n+'" class="pie-cell">'+categoryPieSVG(t)+'</td>':'')+'</tr>').join("");
+ if(!rows)rows='<tr><td colspan="4" class="muted">No expenses.</td></tr>';
+ return '<table class="'+cls+' category-table"><tr><th>Category</th><th>Amount</th><th>Percentage</th><th>Pie Chart</th></tr>'+rows+'</table>';
+}
 function reports(){
  let t=current(),b=document.getElementById("reportSummary");
  document.getElementById("reportTitle").textContent=t?t.name:"";
  if(!t){b.innerHTML='<div class="muted">No trip selected.</div>';return}
- let d=reportData(t), members=d.ms, expenses=d.es;
-
- let commonExpenses=expenses.filter(e=>(e.sharedBy||[]).length===members.length);
- let individualExpenses=expenses.filter(e=>(e.sharedBy||[]).length!==members.length);
-
- function matrixRows(list){
-   return list.map(e=>{
-     let cells=members.map(m=>{
-       let v=e.paidBy===m.id?Number(e.amount):0;
-       return '<td>'+(v?money(v):'')+'</td>';
-     }).join("");
-     return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td>'+cells+'</tr>';
-   }).join("");
- }
-
- function totalCells(list){
-   return members.map(m=>{
-     let v=list.filter(e=>e.paidBy===m.id).reduce((a,e)=>a+Number(e.amount),0);
-     return '<td>'+money(v)+'</td>';
-   }).join("");
- }
-
- function individualRows(list){
-   return list.map(e=>{
-     let paidBy=e.paidBy, sh=e.sharedBy||[];
-     let cells=members.map(m=>{
-       let v=m.id===paidBy?Number(e.amount):0;
-       return '<td>'+(v?money(v):'')+'</td>';
-     }).join("");
-     let shareCells=members.map(m=>{
-       let v=sh.includes(m.id)?Number(e.amount)/Math.max(sh.length,1):0;
-       return '<td class="share-cell">'+(v?money(v):'')+'</td>';
-     }).join("");
-     return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td>'+cells+'</tr>'+
-            '<tr class="share-row"><td><i>Share</i></td>'+shareCells+'</tr>';
-   }).join("");
- }
-
- let memberHeads=members.map(m=>'<th>'+esc(m.name)+'</th>').join("");
-
+ let g=reportGroups(t);
  b.innerHTML=
- '<div class="stats">'+
-   '<div class="stat"><small>Total Expense</small><b>'+money(d.total)+'</b></div>'+
-   '<div class="stat"><small>Total Persons</small><b>'+d.ms.length+'</b></div>'+
-   '<div class="stat"><small>Common</small><b>'+money(d.common)+'</b></div>'+
-   '<div class="stat"><small>Individual</small><b>'+money(d.individual)+'</b></div>'+
+ '<div class="report-page-view">'+
+ '<h3>Dashboard Summary</h3><div class="stats three">'+
+ '<div class="stat"><small>Total Expense</small><b>'+money(g.d.total)+'</b></div>'+
+ '<div class="stat"><small>No. of Persons</small><b>'+g.members.length+'</b></div>'+
+ '<div class="stat"><small>Per Head Share</small><b>'+money(g.members.length?g.d.common/g.members.length:0)+'</b></div>'+
  '</div>'+
- '<div class="report">'+
-   '<h3>Common Expenses</h3>'+
-   '<div class="table-wrap"><table class="table report-matrix"><tr><th>Expense</th>'+memberHeads+'</tr>'+
-   (matrixRows(commonExpenses)||'<tr><td colspan="'+(members.length+1)+'" class="muted">No common expenses.</td></tr>')+
-   '<tr><th>Total</th>'+totalCells(commonExpenses)+'</tr></table></div>'+
-   '<ul class="report-notes"><li>Total expense: sum of amounts actually paid for common expenses.</li><li>Per head share: common expense divided equally among all trip members.</li></ul>'+
+ '<div class="report"><h3>Common Expense</h3>'+commonMatrixHTML(t)+'</div>'+
+ '<div class="report"><h3>Settlement Amounts — Common Expenses</h3><div class="panel"><div class="body">'+settlementHTML(t,"common")+'</div></div></div>'+
  '</div>'+
- '<div class="report">'+
-   '<h3>Individual Expenses</h3>'+
-   '<div class="table-wrap"><table class="table report-matrix"><tr><th>Expense</th>'+memberHeads+'</tr>'+
-   (individualRows(individualExpenses)||'<tr><td colspan="'+(members.length+1)+'" class="muted">No individual expenses.</td></tr>')+
-   '<tr><th>Total</th>'+totalCells(individualExpenses)+'</tr></table></div>'+
- '</div>'+
- '<div class="report"><h3>Final Settlement Amounts</h3><div class="panel"><div class="body">'+settlement(t)+'</div></div></div>';
+ '<div class="report"><h3>Individual Expenses</h3>'+individualMatrixHTML(t)+'</div>'+
+ '<div class="report"><h3>Category-wise</h3>'+categoryHTML(t)+'</div>'+
+ '<div class="report"><h3>Settlement Amounts — Individual Expenses</h3><div class="panel"><div class="body">'+settlementHTML(t,"individual")+'</div></div></div>'+
+ '<div class="report"><h3>Final Settlement Amounts</h3><div class="panel"><div class="body">'+settlementHTML(t,"all")+'</div></div></div>';
 }
 function expensePage(){let t=current(),b=document.getElementById("expensePageContent");document.getElementById("expensePageTitle").textContent=t?t.name:"";if(!t){b.innerHTML='<div class="muted">No trip selected.</div>';return}b.innerHTML='<div class="report"><h3>All Expenses</h3>'+exps(t).map(e=>expenseCard(e,t)).join("")+'</div>'}
 function analysisPage(){let t=current(),b=document.getElementById("analysisPageContent");document.getElementById("analysisPageTitle").textContent=t?t.name:"";if(!t){b.innerHTML='<div class="muted">No trip selected.</div>';return}let d=reportData(t),rows=Object.entries(d.cat).map(([c,a])=>'<tr><td>'+esc(c)+'</td><td>'+money(a)+'</td><td>'+Math.round(a/d.total*100)+'%</td></tr>').join(""),dates=Object.entries(d.es.reduce((o,e)=>{o[e.date]=o[e.date]||{c:0,i:0};if((e.sharedBy||[]).length===d.ms.length)o[e.date].c+=Number(e.amount);else o[e.date].i+=Number(e.amount);return o},{})).sort().map(([dt,x])=>'<tr><td>'+dt+'</td><td>'+money(x.c)+'</td><td>'+money(x.i)+'</td><td>'+money(x.c+x.i)+'</td></tr>').join("");b.innerHTML='<div class="report"><h3>Category-wise Expense</h3><table class="table"><tr><th>Category</th><th>Amount</th><th>%</th></tr>'+rows+'</table></div><div class="report"><h3>Date-wise Expense</h3><table class="table"><tr><th>Date</th><th>Common</th><th>Individual</th><th>Total</th></tr>'+dates+'</table></div>'}
@@ -200,85 +233,29 @@ function restoreFile(e){let f=e.target.files[0];if(!f)return;f.text().then(txt=>
 function download(blob,name){let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function excel(){if(!window.XLSX)return alert("Excel export library is unavailable. Connect to the internet and try again.");let wb=XLSX.utils.book_new(),rows=(x)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(x),arguments[0]);XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.trips.map(t=>({...t,totalPersons:mems(t).length,totalExpense:total(t),perPersonExpense:mems(t).length?total(t)/mems(t).length:0}))),"Trips");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.members),"Members");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.expenses),"Expenses");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.expenses.flatMap(e=>(e.sharedBy||[]).map(mid=>({expenseId:e.id,memberId:mid,shareAmount:Number(e.amount)/(e.sharedBy||[]).length})))),"Expense Shares");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.settlements),"Settlements");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.categories.map((name,i)=>({categoryId:i+1,name}))),"Categories");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.trips.map(t=>({tripId:t.id,totalExpense:total(t),totalPersons:mems(t).length,perPersonExpense:mems(t).length?total(t)/mems(t).length:0}))),"Reports");XLSX.writeFile(wb,"trip-manager-export.xlsx")}
 function makePdf(){
- let t=current();
- if(!t)return alert("No trip selected.");
-
- let d=reportData(t), members=d.ms, expenses=d.es;
- let commonExpenses=expenses.filter(e=>(e.sharedBy||[]).length===members.length);
- let individualExpenses=expenses.filter(e=>(e.sharedBy||[]).length!==members.length);
-
- function heads(){return members.map(m=>'<th>'+esc(m.name)+'</th>').join("")}
- function paidCells(list){
-   return members.map(m=>{
-     let v=list.filter(e=>e.paidBy===m.id).reduce((a,e)=>a+Number(e.amount),0);
-     return '<td>'+(v?money(v):'')+'</td>';
-   }).join("");
- }
- function commonRows(list){
-   return list.map(e=>{
-     let cells=members.map(m=>{
-       let v=e.paidBy===m.id?Number(e.amount):0;
-       return '<td>'+(v?money(v):'')+'</td>';
-     }).join("");
-     return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td>'+cells+'</tr>';
-   }).join("");
- }
- function individualRows(list){
-   return list.map(e=>{
-     let sh=e.sharedBy||[];
-     let paid=members.map(m=>{
-       let v=m.id===e.paidBy?Number(e.amount):0;
-       return '<td>'+(v?money(v):'')+'</td>';
-     }).join("");
-     let shares=members.map(m=>{
-       let v=sh.includes(m.id)?Number(e.amount)/Math.max(sh.length,1):0;
-       return '<td class="pdf-share">'+(v?money(v):'')+'</td>';
-     }).join("");
-     return '<tr><td>'+esc(e.category)+(e.description?' — '+esc(e.description):'')+'</td>'+paid+'</tr>'+
-            '<tr class="pdf-share-row"><td><i>Share</i></td>'+shares+'</tr>';
-   }).join("");
- }
-
- let catRows=Object.entries(d.cat), dateMap={};
- expenses.forEach(e=>dateMap[e.date]=(dateMap[e.date]||0)+Number(e.amount));
+ let t=current();if(!t)return alert("No trip selected.");
+ let g=reportGroups(t);
 
  let firstPage=
-   '<div class="pdf-content">'+
-   '<div class="pdf-title">Trip Manager — '+esc(t.name)+'</div>'+
-   '<div class="pdf-small">Generated: '+new Date().toLocaleString()+'</div>'+
-   '<div class="pdf-block"><h3>Trip Information</h3><table class="pdf-table">'+
-     '<tr><td>Trip Name</td><td>'+esc(t.name)+'</td></tr>'+
-     '<tr><td>Start Date</td><td>'+esc(t.startDate)+'</td></tr>'+
-     '<tr><td>End Date</td><td>'+esc(t.endDate)+'</td></tr>'+
-     '<tr><td>Transport Mode</td><td colspan="3">'+esc(t.transportMode||"—")+(t.vehicleName?' — '+esc(t.vehicleName):'')+'</td></tr>'+
-     '<tr><td>Notes</td><td colspan="3">'+esc(t.notes||"—")+'</td></tr>'+
-   '</table></div>'+
-   '<div class="pdf-block"><h3>Spots Covered</h3><div>'+esc([t.source,...t.destinations].filter(Boolean).join(" → ")||"—")+'</div></div>'+
-   '<div class="pdf-block"><h3>Dashboard Summary</h3><table class="pdf-table"><tr><th>Total Expense</th><th>Persons</th><th>Common</th><th>Individual</th></tr><tr><td>'+money(d.total)+'</td><td>'+d.ms.length+'</td><td>'+money(d.common)+'</td><td>'+money(d.individual)+'</td></tr></table></div>'+
-   '<div class="pdf-block"><h3>Common Expenses</h3><table class="pdf-table pdf-matrix"><tr><th>Expense</th>'+heads()+'</tr>'+
-     (commonRows(commonExpenses)||'<tr><td colspan="'+(members.length+1)+'">No common expenses.</td></tr>')+
-     '<tr><th>Total</th>'+paidCells(commonExpenses)+'</tr></table></div>'+
-   '<div class="pdf-block"><h3>Individual Expenses</h3><table class="pdf-table pdf-matrix"><tr><th>Expense</th>'+heads()+'</tr>'+
-     (individualRows(individualExpenses)||'<tr><td colspan="'+(members.length+1)+'">No individual expenses.</td></tr>')+
-     '<tr><th>Total</th>'+paidCells(individualExpenses)+'</tr></table></div>'+
-   '<div class="pdf-block"><h3>Final Settlement Amounts</h3>'+settlement(t)+'</div>'+
-   '</div>';
+ '<div class="pdf-page pdf-page-1">'+
+ '<div class="pdf-title">Trip Manager — '+esc(t.name)+'</div>'+
+ '<div class="pdf-block"><h3>Dashboard Summary</h3><table class="pdf-table summary-table"><tr><th>Total Expense</th><th>No. of Persons</th><th>Per Head Share</th></tr><tr><td>'+money(g.d.total)+'</td><td>'+g.members.length+'</td><td>'+money(g.members.length?g.d.common/g.members.length:0)+'</td></tr></table></div>'+
+ '<div class="pdf-block"><h3>Common Expense</h3>'+commonMatrixHTML(t,"pdf-table pdf-matrix")+'</div>'+
+ '<div class="pdf-block"><h3>Settlement Amounts — Common Expenses</h3><div class="pdf-settlement">'+settlementHTML(t,"common")+'</div></div>'+
+ '</div>';
 
  let secondPage=
-   '<div class="pdf-page-2">'+
-   '<div class="pdf-title">Expense Analysis — '+esc(t.name)+'</div>'+
-   '<div class="pdf-block"><h3>Category-wise Expense</h3><table class="pdf-table"><tr><th>Category</th><th>Amount</th><th>Percentage</th></tr>'+
-     catRows.map(([c,a])=>'<tr><td>'+esc(c)+'</td><td>'+money(a)+'</td><td>'+Math.round(a/d.total*100)+'%</td></tr>').join("")+
-   '</table></div>'+
-   '<div class="pdf-block"><h3>Date-wise Expense</h3><table class="pdf-table"><tr><th>Date</th><th>Total</th></tr>'+
-     Object.entries(dateMap).sort().map(([dt,a])=>'<tr><td>'+dt+'</td><td>'+money(a)+'</td></tr>').join("")+
-   '</table></div>'+
-   '</div>';
+ '<div class="pdf-page pdf-page-2">'+
+ '<div class="pdf-title">Trip Manager — '+esc(t.name)+' — Page 2</div>'+
+ '<div class="pdf-block"><h3>Individual Expenses</h3>'+individualMatrixHTML(t,"pdf-table pdf-matrix")+'</div>'+
+ '<div class="pdf-block"><h3>Category-wise</h3>'+categoryHTML(t,"pdf-table")+'</div>'+
+ '<div class="pdf-block"><h3>Settlement Amounts — Individual Expenses</h3><div class="pdf-settlement">'+settlementHTML(t,"individual")+'</div></div>'+
+ '<div class="pdf-block"><h3>Final Settlement Amounts</h3><div class="pdf-settlement">'+settlementHTML(t,"all")+'</div></div>'+
+ '</div>';
 
  document.getElementById("pdfPrint").innerHTML=firstPage+secondPage;
  window.print();
 }
-function svgPie(vals){let sum=vals.reduce((a,b)=>a+b,0)||1,cx=95,cy=95,r=82,a=-Math.PI/2,parts="";vals.forEach(v=>{let na=a+v/sum*Math.PI*2,x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(na),y2=cy+r*Math.sin(na),large=na-a>Math.PI?1:0;parts+='<path d="M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z" stroke="#fff" stroke-width="1"></path>';a=na});return'<svg class="pie" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">'+parts+'</svg>'}
 document.getElementById("closeModal").onclick=closeModal;document.getElementById("addMember").onclick=()=>memberModal();document.getElementById("backup").onclick=backup;document.getElementById("restore").onclick=()=>document.getElementById("restoreFile").click();document.getElementById("restoreFile").onchange=restoreFile;document.getElementById("genReports").onclick=()=>{show("reports");setTimeout(makePdf,250)};document.getElementById("tripSearch").oninput=trips;document.getElementById("memberSearch").oninput=members;document.getElementById("globalSearch").oninput=search;document.getElementById("navUniversalSearch").addEventListener("focus",()=>show("search"));document.getElementById("navUniversalSearch").addEventListener("input",e=>{document.getElementById("globalSearch").value=e.target.value;show("search")});
 function adminUnlock(){clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";document.getElementById("adminTrigger").style.display="none"}}
 document.getElementById("adminTrigger").addEventListener("click",function(e){e.preventDefault();clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";this.style.display="none"}});
