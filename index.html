@@ -77,7 +77,10 @@ input,select{padding:10px;border:1px solid #dbe2ea;border-radius:8px;background:
 <script>
 "use strict";
 const DB="tripManagerDataV3",OLDM="tripExpenseMembers",OLDT="tripExpenseTrips";
+const CLOUD_API="https://script.google.com/macros/s/AKfycbwj9EgteOSX0DX-9IflFxpk_5GFeZdIzb7XPlwG_hoTe4DouikZyIpPnV21oRytcbKbqg/exec";
 let S=load(),screen="home",admin=false,tripId=null,clicks=0;
+let cloudSaveTimer=null,cloudReady=false,cloudLoading=false;
+
 
 function base(){return{version:3,members:[],trips:[],expenses:[],categories:["Food","Hotel / Stay","Travel / Fuel","Tickets / Toll","Shopping","Miscellaneous"],settlements:[]}}
 function id(p){return p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
@@ -91,7 +94,54 @@ function load(){
  return s}catch(e){return base()}
 }
 function normalize(x){let s={...base(),...x};s.members=s.members||[];s.trips=s.trips||[];s.expenses=s.expenses||[];s.settlements=s.settlements||[];s.trips.forEach(t=>{t.memberIds=t.memberIds||[];t.destinations=t.destinations||[];t.status=t.status||"ACTIVE";t.notes=t.notes||""});return s}
-function save(){localStorage.setItem(DB,JSON.stringify(S))}
+function save(){
+ localStorage.setItem(DB,JSON.stringify(S));
+ if(cloudReady) scheduleCloudSave();
+}
+function hasUserData(x){
+ return !!(x && ((x.members||[]).length || (x.trips||[]).length || (x.expenses||[]).length || (x.settlements||[]).length));
+}
+function scheduleCloudSave(){
+ clearTimeout(cloudSaveTimer);
+ cloudSaveTimer=setTimeout(cloudSave,500);
+}
+async function cloudSave(){
+ if(!cloudReady || cloudLoading)return;
+ try{
+  let body=new URLSearchParams();
+  body.set("payload",JSON.stringify({action:"replaceall",data:S}));
+  let r=await fetch(CLOUD_API,{method:"POST",body});
+  let x=await r.json();
+  if(!x.ok)console.warn("Trip Manager cloud save failed",x);
+ }catch(e){console.warn("Trip Manager cloud save failed",e)}
+}
+async function initCloud(){
+ cloudLoading=true;
+ try{
+  let r=await fetch(CLOUD_API+"?action=load",{cache:"no-store"});
+  let x=await r.json();
+  if(!x.ok)throw Error(x.message||"Cloud load failed");
+  let cloud=normalize(x.data||base());
+  if(hasUserData(cloud)){
+   S=cloud;
+   localStorage.setItem(DB,JSON.stringify(S));
+  }else if(hasUserData(S)){
+   cloudReady=true;
+   await cloudSave();
+   cloudLoading=false;
+   render();
+   return;
+  }
+  cloudReady=true;
+  render();
+ }catch(e){
+  console.warn("Trip Manager cloud unavailable; local mode continues",e);
+ }finally{
+  cloudLoading=false;
+  cloudReady=true;
+ }
+}
+
 function current(){let t=S.trips.find(t=>t.id===tripId);if(t)return t;t=S.trips.find(t=>t.status==="ACTIVE");if(t){tripId=t.id;return t}return null}
 function mems(t){return(t?.memberIds||[]).map(x=>S.members.find(m=>m.id===x)).filter(Boolean)}
 function exps(t){return S.expenses.filter(e=>e.tripId===t.id)}
@@ -386,6 +436,7 @@ document.getElementById("closeModal").onclick=closeModal;document.getElementById
 function adminUnlock(){clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";document.getElementById("adminTrigger").style.display="none"}}
 document.getElementById("adminTrigger").addEventListener("click",function(e){e.preventDefault();clicks++;if(clicks>=5){admin=true;document.getElementById("adminActions").classList.remove("hidden");document.getElementById("adminActions").style.display="flex";this.style.display="none"}});
 render();
+initCloud();
 let msb=document.getElementById("manageSettle");if(msb)msb.onclick=settleCurrent;
 </script>
 </body>
